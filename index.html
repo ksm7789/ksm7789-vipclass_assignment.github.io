@@ -438,6 +438,7 @@
       const [inputPassword, setInputPassword] = useState('');
       const [isUnlocked, setIsUnlocked] = useState(false);
       const [showPasswordModal, setShowPasswordModal] = useState(false);
+      const [passwordAttempts, setPasswordAttempts] = useState(0);
 
       const specialNoteOptions = ['운동부', '도움반', '쌍생아', '다문화'];
 
@@ -469,13 +470,10 @@
         const trimmedInput = inputPassword.trim();
         const trimmedPassword = password.trim();
         
-        console.log('입력한 비밀번호:', trimmedInput);
-        console.log('저장된 비밀번호:', trimmedPassword);
-        console.log('비교 결과:', trimmedInput === trimmedPassword);
-        
         if (trimmedInput === trimmedPassword) {
           setIsUnlocked(true);
           setShowPasswordModal(false);
+          setPasswordAttempts(0); // 성공 시 시도 횟수 초기화
           
           // 저장된 데이터 로드
           try {
@@ -496,8 +494,18 @@
             console.error('데이터 로드 오류:', error);
           }
         } else {
-          alert(`비밀번호가 틀렸습니다.\n입력: ${trimmedInput}\n저장: ${trimmedPassword}`);
-          setInputPassword('');
+          const newAttempts = passwordAttempts + 1;
+          setPasswordAttempts(newAttempts);
+          
+          if (newAttempts >= 5) {
+            // 5회 실패 시 모든 데이터 초기화
+            alert('비밀번호를 5회 틀렸습니다.\n보안을 위해 저장된 모든 데이터가 삭제됩니다.');
+            localStorage.clear();
+            window.location.reload();
+          } else {
+            alert(`비밀번호가 틀렸습니다. (${newAttempts}/5)`);
+            setInputPassword('');
+          }
         }
       };
 
@@ -1387,26 +1395,22 @@
                 </button>
                 
                 {isPasswordSet && (
-                  <button
-                    onClick={() => {
-                      if (confirm('저장된 데이터 없이 새로 시작하시겠습니까?')) {
-                        setIsUnlocked(true);
-                        setShowPasswordModal(false);
-                      }
-                    }}
+                  <div
                     style={{
                       width: '100%',
                       padding: '0.75rem',
                       background: 'transparent',
-                      color: '#999',
+                      color: '#ff6b6b',
                       border: 'none',
                       fontSize: '0.85rem',
                       marginTop: '0.5rem',
-                      cursor: 'pointer'
+                      textAlign: 'center',
+                      fontWeight: '600',
+                      lineHeight: '1.6'
                     }}
                   >
-                    데이터 없이 시작
-                  </button>
+                    ⚠️ 비밀번호 5회 틀리면<br/>저장된 데이터가 초기화됩니다.
+                  </div>
                 )}
               </div>
             </div>
