@@ -1850,8 +1850,6 @@
 
                   <div style={{ 
                     overflowX: 'auto',
-                    maxHeight: '600px',
-                    overflowY: 'auto',
                     border: '1px solid #e0e0e0',
                     borderRadius: '8px',
                     position: 'relative',
@@ -1969,16 +1967,31 @@
                                     
                                     {isDropdownActive && (
                                       <div
+                                        ref={(el) => {
+                                          if (el) {
+                                            const parentRect = el.parentElement.getBoundingClientRect();
+                                            const viewportHeight = window.innerHeight;
+                                            const modalHeight = 60; // 모달 예상 높이
+                                            
+                                            // 아래 공간이 충분한지 확인
+                                            if (parentRect.bottom + modalHeight > viewportHeight - 20) {
+                                              // 위로 표시
+                                              el.style.top = `${parentRect.top - modalHeight - 10}px`;
+                                            } else {
+                                              // 아래로 표시
+                                              el.style.top = `${parentRect.bottom + 8}px`;
+                                            }
+                                            el.style.left = `${parentRect.left + (parentRect.width / 2)}px`;
+                                          }
+                                        }}
                                         style={{
-                                          position: 'absolute',
-                                          top: 'calc(100% + 0.5rem)',
-                                          left: '50%',
+                                          position: 'fixed',
                                           transform: 'translateX(-50%)',
                                           background: 'white',
                                           borderRadius: '10px',
                                           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
                                           padding: '0.4rem',
-                                          zIndex: 1000,
+                                          zIndex: 9999,
                                           display: 'flex',
                                           gap: '0.4rem',
                                           whiteSpace: 'nowrap'
@@ -3132,35 +3145,4 @@
             textAlign: 'center',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
-            <div style={{
-              fontSize: '1.5rem',
-              marginBottom: '0.5rem'
-            }}>🔐</div>
-            <div style={{
-              color: 'white',
-              fontSize: '0.9rem',
-              lineHeight: '1.6',
-              maxWidth: '800px',
-              margin: '0 auto'
-            }}>
-              <strong>개인정보 보호 안내</strong><br/>
-              이 프로그램은 100% 로컬 전용입니다. 모든 데이터는 귀하의 브라우저 메모리에만 저장되며,<br/>
-              서버나 외부로 전송되지 않습니다. 페이지를 새로고침하면 모든 데이터가 삭제됩니다.<br/>
-              <span style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                결과를 보관하려면 반드시 엑셀 다운로드 기능을 사용하세요.
-              </span>
-              <br/><br/>
-              <span style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                * 최종적인 반편성 권한과 책임은 사용하신 선생님께 있습니다.
-              </span>
-            </div>
-          </div>
-        </div>
-        </div>
-      );
-    }
-
-    ReactDOM.render(<ClassAssignment />, document.getElementById('root'));
-  </script>
-</body>
-</html>
+           
